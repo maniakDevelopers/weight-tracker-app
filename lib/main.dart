@@ -21,9 +21,11 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      initialRoute: '/',
-      routes: appRoutes,
-      // home: const MyHomePage(title: 'Weight Tracker App'),
+
+      // TODO: Uncomment the routes
+      // initialRoute: '/',
+      // routes: appRoutes,
+      home: LoginScreen(),
     );
   }
 }
