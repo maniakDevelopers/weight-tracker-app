@@ -1,18 +1,24 @@
 import 'package:weight_tracker_app/common/packages.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => TokenProvider()),
       ],
-      child: MyApp(),
+      child: MyApp(
+        token: prefs.getString("token"),
+      ),
     ),
   );
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final token;
+  const MyApp({super.key, required this.token});
 
   // This widget is the root of your application.
   @override
@@ -30,7 +36,10 @@ class MyApp extends StatelessWidget {
       ),
 
       // TODO: Uncomment the routes
-      initialRoute: '/',
+      initialRoute:
+          JwtDecoder.isExpired(context.read<TokenProvider>().token!) == false
+              ? '/home_screen'
+              : '/login_screen',
       routes: appRoutes,
       // home: SignupScreen(),
     );

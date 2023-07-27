@@ -9,6 +9,7 @@ var appRoutes = {
   '/weight_crud_screen': (context) => WeightCrudScreen(
         title: 'Weight Tracker App',
       ),
+  '/sign_up_screen': (context) => SignupScreen(),
 };
 
 var appRoutes2 = {
