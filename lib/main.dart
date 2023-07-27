@@ -23,9 +23,9 @@ class MyApp extends StatelessWidget {
       ),
 
       // TODO: Uncomment the routes
-      // initialRoute: '/',
-      // routes: appRoutes,
-      home: LoginScreen(),
+      initialRoute: '/',
+      routes: appRoutes,
+      // home: LoginScreen(),
     );
   }
 }
