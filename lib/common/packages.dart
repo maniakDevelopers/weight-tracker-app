@@ -7,3 +7,4 @@ export 'package:weight_tracker_app/screens/login_screen.dart';
 export 'package:weight_tracker_app/screens/home_screen.dart';
 export 'package:weight_tracker_app/screens/weight_crud_screen.dart';
 export 'package:weight_tracker_app/common/constants.dart';
+export 'package:weight_tracker_app/common/configs.dart';

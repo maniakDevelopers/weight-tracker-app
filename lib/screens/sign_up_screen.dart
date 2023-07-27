@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'package:weight_tracker_app/common/packages.dart';
+import 'package:http/http.dart' as http;
 
 class SignupScreen extends StatefulWidget {
   SignupScreen({Key? key}) : super(key: key);
@@ -15,6 +17,24 @@ class _SignupScreenState extends State<SignupScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _validate = false;
+
+  void Signup() async {
+    if (_emailController.text.isNotEmpty &
+        _passwordController.text.isNotEmpty) {
+      var requestBody = {
+        "email": _emailController.text,
+        "password": _passwordController.text
+      };
+      print(Config.registerEndpoint);
+      print(requestBody);
+      var response = await http.post(Uri.parse(Config.registerEndpoint),
+          headers: {"Content-Type": "application/json"},
+          body: jsonEncode(requestBody));
+    } else {
+      _validate = false;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -92,8 +112,8 @@ class _SignupScreenState extends State<SignupScreen> {
                 ),
                 GestureDetector(
                   onTap: () {
-                    // AuthService().emailLogin(email!, password!);
-                    Navigator.pushNamed(context, '/');
+                    Signup();
+                    // Navigator.pushNamed(context, '/');
                   },
                   child: Material(
                     shape: RoundedRectangleBorder(
