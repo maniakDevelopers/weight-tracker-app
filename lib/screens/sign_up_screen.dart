@@ -17,8 +17,9 @@ class _SignupScreenState extends State<SignupScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _validate = false;
+  bool isSigneUp = false;
 
-  void Signup() async {
+  void signup() async {
     if (_emailController.text.isNotEmpty &
         _passwordController.text.isNotEmpty) {
       var requestBody = {
@@ -30,6 +31,18 @@ class _SignupScreenState extends State<SignupScreen> {
       var response = await http.post(Uri.parse(Config.registerEndpoint),
           headers: {"Content-Type": "application/json"},
           body: jsonEncode(requestBody));
+
+      var jsonResponse = jsonDecode(response.body);
+      print(jsonResponse["success"]);
+      if (jsonResponse["status"]) {
+        Navigator.pushNamed(context, '/login_screen');
+        // setState(() {
+        //   isSigneUp = true;
+        // });
+      } else {
+        // TODO: Error handling
+        print("Failed");
+      }
     } else {
       _validate = false;
     }
@@ -112,8 +125,12 @@ class _SignupScreenState extends State<SignupScreen> {
                 ),
                 GestureDetector(
                   onTap: () {
-                    Signup();
-                    // Navigator.pushNamed(context, '/');
+                    signup();
+                    // if (isSigneUp) {
+                    //   Navigator.pushNamed(context, '/login_screen');
+                    // } else {
+                    //   print("Failed to sign up");
+                    // }
                   },
                   child: Material(
                     shape: RoundedRectangleBorder(

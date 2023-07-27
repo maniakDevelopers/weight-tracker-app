@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:weight_tracker_app/common/packages.dart';
+import 'package:http/http.dart' as http;
 
 class LoginScreen extends StatefulWidget {
   LoginScreen({Key? key}) : super(key: key);
@@ -15,6 +18,50 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _validate = false;
+
+  late SharedPreferences prefs;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    initSharedPref();
+  }
+
+  void initSharedPref() async {
+    prefs = await SharedPreferences.getInstance();
+  }
+
+  void login() async {
+    if (_emailController.text.isNotEmpty &
+        _passwordController.text.isNotEmpty) {
+      var requestBody = {
+        "email": _emailController.text,
+        "password": _passwordController.text
+      };
+      print(Config.registerEndpoint);
+      print(requestBody);
+      var response = await http.post(Uri.parse(Config.loginEndpoint),
+          headers: {"Content-Type": "application/json"},
+          body: jsonEncode(requestBody));
+
+      var jsonResponse = jsonDecode(response.body);
+      print(jsonResponse["success"]);
+      if (jsonResponse["status"]) {
+        var myToken = jsonResponse["token"];
+        prefs.setString("token", myToken);
+
+        context.read<TokenProvider>().getToken(myToken);
+        Navigator.pushNamed(context, '/home_screen');
+      } else {
+        // TODO: Error handling
+        print("Failed");
+      }
+    } else {
+      _validate = false;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -92,8 +139,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 GestureDetector(
                   onTap: () {
-                    // AuthService().emailLogin(email!, password!);
-                    Navigator.pushNamed(context, '/');
+                    login();
                   },
                   child: Material(
                     shape: RoundedRectangleBorder(

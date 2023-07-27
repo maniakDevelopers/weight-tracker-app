@@ -1,6 +1,17 @@
 import 'package:weight_tracker_app/common/packages.dart';
 
 var appRoutes = {
+  '/': (context) => SignupScreen(),
+  '/home_screen': (context) => HomeScreen(
+        title: '',
+      ),
+  '/login_screen': (context) => LoginScreen(),
+  '/weight_crud_screen': (context) => WeightCrudScreen(
+        title: 'Weight Tracker App',
+      ),
+};
+
+var appRoutes2 = {
   '/': (context) => HomeScreen(
         title: 'Weight Tracker App',
       ),

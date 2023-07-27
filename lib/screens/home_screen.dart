@@ -4,35 +4,26 @@ import 'package:weight_tracker_app/common/packages.dart';
 
 class HomeScreen extends StatefulWidget {
   HomeScreen({super.key, required this.title});
-
+// TODO: Change this to using provider
   final String title;
+  // final String token;
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  String email = "test";
   @override
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    Map<String, dynamic> jwtDecodedToken =
+        JwtDecoder.decode(context.read<TokenProvider>().token!);
+    email = jwtDecodedToken["email"];
   }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
@@ -51,15 +42,19 @@ class _HomeScreenState extends State<HomeScreen> {
           Container(
             height: MediaQuery.of(context).size.height * 0.40,
             width: MediaQuery.of(context).size.width * 0.90,
-            child: Row(
+            child: Column(
               children: [
                 Lottie.asset(
                   'assets/lottiefiles/shiba-coffee-relax.json',
                   height: MediaQuery.of(context).size.height * 0.30,
                   width: MediaQuery.of(context).size.width * 0.45,
                 ),
-                const Text(
-                  'Name :',
+                // Text(
+                //   'Name :${context.watch<TokenProvider>().token}',
+                //   style: kSmallPrimarytTextStyle,
+                // ),
+                Text(
+                  'Name :$email',
                   style: kSmallPrimarytTextStyle,
                 ),
               ],

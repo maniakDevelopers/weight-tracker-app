@@ -1,7 +1,14 @@
 import 'package:weight_tracker_app/common/packages.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => TokenProvider()),
+      ],
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -25,7 +32,7 @@ class MyApp extends StatelessWidget {
       // TODO: Uncomment the routes
       initialRoute: '/',
       routes: appRoutes,
-      // home: LoginScreen(),
+      // home: SignupScreen(),
     );
   }
 }

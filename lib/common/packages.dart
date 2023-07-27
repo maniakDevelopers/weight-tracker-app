@@ -8,3 +8,6 @@ export 'package:weight_tracker_app/screens/home_screen.dart';
 export 'package:weight_tracker_app/screens/weight_crud_screen.dart';
 export 'package:weight_tracker_app/common/constants.dart';
 export 'package:weight_tracker_app/common/configs.dart';
+export 'package:shared_preferences/shared_preferences.dart';
+export 'package:weight_tracker_app/providers/token_provider.dart';
+export 'package:jwt_decoder/jwt_decoder.dart';
