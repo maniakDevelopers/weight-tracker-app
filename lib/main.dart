@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:weight_tracker_app/common/packages.dart';
 
 void main() {
   runApp(const MyApp());
