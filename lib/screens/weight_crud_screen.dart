@@ -35,7 +35,7 @@ class _WeightCrudScreenState extends State<WeightCrudScreen> {
   void addWeight() async {
     if (_weightController.text.isNotEmpty) {
       var requestBody = {
-        "userid": userId,
+        "userId": userId,
         "weight": _weightController.text,
         "weighed_on": DateTime.now().toString(),
       };
