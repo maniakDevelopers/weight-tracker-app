@@ -32,6 +32,11 @@ class _LoginScreenState extends State<LoginScreen> {
     prefs = await SharedPreferences.getInstance();
   }
 
+  Future<void> saveToken(String token) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('token', token);
+  }
+
   void login() async {
     if (_emailController.text.isNotEmpty &
         _passwordController.text.isNotEmpty) {
@@ -50,6 +55,8 @@ class _LoginScreenState extends State<LoginScreen> {
       if (jsonResponse["status"]) {
         var myToken = jsonResponse["token"];
         prefs.setString("token", myToken);
+
+        saveToken(myToken);
 
         context.read<TokenProvider>().getToken(myToken);
         Navigator.pushNamed(context, '/home_screen');

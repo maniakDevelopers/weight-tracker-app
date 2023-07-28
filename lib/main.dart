@@ -4,16 +4,24 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SharedPreferences prefs = await SharedPreferences.getInstance();
 
+  String myValue = prefs.getString('myValue') ?? "";
+  String? retrievedToken = await retrieveToken();
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => TokenProvider()),
+        ChangeNotifierProvider(
+            create: (_) => TokenProvider()..getToken(myValue)),
       ],
       child: MyApp(
         token: prefs.getString("token"),
       ),
     ),
   );
+}
+
+Future<String?> retrieveToken() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  return prefs.getString('token');
 }
 
 class MyApp extends StatelessWidget {
@@ -36,10 +44,9 @@ class MyApp extends StatelessWidget {
       ),
 
       // TODO: Uncomment the routes
-      initialRoute:
-          JwtDecoder.isExpired(context.read<TokenProvider>().token!) == false
-              ? '/home_screen'
-              : '/login_screen',
+      initialRoute: JwtDecoder.isExpired(token) == false
+          ? '/home_screen'
+          : '/login_screen',
       routes: appRoutes,
       // home: SignupScreen(),
     );
