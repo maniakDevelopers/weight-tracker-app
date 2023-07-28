@@ -44,9 +44,10 @@ class MyApp extends StatelessWidget {
       ),
 
       // TODO: Uncomment the routes
-      initialRoute: JwtDecoder.isExpired(token) == false
-          ? '/home_screen'
-          : '/login_screen',
+      initialRoute: '/',
+      // initialRoute: JwtDecoder.isExpired(token) == false
+      //     ? '/home_screen'
+      //     : '/login_screen',
       routes: appRoutes,
       // home: SignupScreen(),
     );
