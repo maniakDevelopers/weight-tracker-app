@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'package:weight_tracker_app/common/packages.dart';
+import 'package:http/http.dart' as http;
 
 class SignupScreen extends StatefulWidget {
   SignupScreen({Key? key}) : super(key: key);
@@ -15,6 +17,38 @@ class _SignupScreenState extends State<SignupScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _validate = false;
+  bool isSigneUp = false;
+
+  void signup() async {
+    if (_emailController.text.isNotEmpty &
+        _passwordController.text.isNotEmpty) {
+      var requestBody = {
+        "email": _emailController.text,
+        "password": _passwordController.text
+      };
+      print(Config.registerEndpoint);
+      print(requestBody);
+      print("URI parse :  ${Uri.parse(Config.registerEndpoint)}");
+      var response = await http.post(Uri.parse(Config.registerEndpoint),
+          headers: {"Content-Type": "application/json"},
+          body: jsonEncode(requestBody));
+
+      var jsonResponse = jsonDecode(response.body);
+      print(jsonResponse["success"]);
+      if (jsonResponse["status"]) {
+        Navigator.pushNamed(context, '/login_screen');
+        // setState(() {
+        //   isSigneUp = true;
+        // });
+      } else {
+        // TODO: Error handling
+        print("Failed");
+      }
+    } else {
+      _validate = false;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -92,8 +126,12 @@ class _SignupScreenState extends State<SignupScreen> {
                 ),
                 GestureDetector(
                   onTap: () {
-                    // AuthService().emailLogin(email!, password!);
-                    Navigator.pushNamed(context, '/');
+                    signup();
+                    // if (isSigneUp) {
+                    //   Navigator.pushNamed(context, '/login_screen');
+                    // } else {
+                    //   print("Failed to sign up");
+                    // }
                   },
                   child: Material(
                     shape: RoundedRectangleBorder(

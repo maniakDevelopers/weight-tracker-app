@@ -37,6 +37,9 @@ dependencies:
   cupertino_icons: ^1.0.2
   provider: ^6.0.5
   lottie: ^2.3.2
+  http:
+  shared_preferences:
+  jwt_decoder:
 
 dev_dependencies:
   flutter_test:

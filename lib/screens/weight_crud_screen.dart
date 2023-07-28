@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:weight_tracker_app/common/packages.dart';
+import 'package:http/http.dart' as http;
 
 // Save, Edit and Delete Weight
 
@@ -12,24 +15,75 @@ class WeightCrudScreen extends StatefulWidget {
 }
 
 class _WeightCrudScreenState extends State<WeightCrudScreen> {
-  int _counter = 0;
+  final scaffoldKey = GlobalKey<ScaffoldState>();
+  final formKey = GlobalKey<FormState>();
+  String? userid;
+  String? weight;
+  String? weighed_on;
+  String userId = "test";
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    Map<String, dynamic> jwtDecodedToken =
+        JwtDecoder.decode(context.read<TokenProvider>().token!);
+    userId = jwtDecodedToken["id"];
+  }
 
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
+  final TextEditingController _weightController = TextEditingController();
+  bool _validate = false;
+  void addWeight() async {
+    if (_weightController.text.isNotEmpty) {
+      var requestBody = {
+        "userId": userId,
+        "weight": _weightController.text,
+        "weighed_on": DateTime.now().toString(),
+      };
+
+      var response = await http.post(Uri.parse(Config.addWeightEndpoint),
+          headers: {"Content-Type": "application/json"},
+          body: jsonEncode(requestBody));
+
+      var jsonResponse = jsonDecode(response.body);
+
+      if (jsonResponse["status"]) {
+        print("Weight added");
+        Navigator.pushNamed(context, '/');
+      } else {
+        // TODO: Error handling
+        print("Weight Failed");
+      }
+    } else {
+      _validate = false;
+    }
+  }
+
+  void deleteWeight() async {
+    if (_weightController.text.isNotEmpty) {
+      var requestBody = {
+        "userId": userId,
+      };
+
+      var response = await http.post(Uri.parse(Config.addWeightEndpoint),
+          headers: {"Content-Type": "application/json"},
+          body: jsonEncode(requestBody));
+
+      var jsonResponse = jsonDecode(response.body);
+
+      if (jsonResponse["status"]) {
+        print("Weight Deleted");
+        Navigator.pushNamed(context, '/weight_crud_screen');
+      } else {
+        // TODO: Error handling
+        print("Weight Delete Failed");
+      }
+    } else {
+      _validate = false;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    String? weight;
-    final TextEditingController _weightController = TextEditingController();
-    // than having to individually change instances of widgets.
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
@@ -61,7 +115,7 @@ class _WeightCrudScreenState extends State<WeightCrudScreen> {
                       weight = value;
                     },
                     controller: _weightController,
-                    keyboardType: TextInputType.number,
+                    // keyboardType: TextInputType.number,
                     decoration: kTextFieldDecoration.copyWith(
                         hintText: 'Enter your Weight',
                         prefixIcon: Icon(Icons.scale_rounded)),
@@ -71,8 +125,7 @@ class _WeightCrudScreenState extends State<WeightCrudScreen> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      // AuthService().emailLogin(email!, password!);
-                      Navigator.pushNamed(context, '/');
+                      addWeight();
                     },
                     child: Material(
                       shape: RoundedRectangleBorder(
@@ -101,11 +154,11 @@ class _WeightCrudScreenState extends State<WeightCrudScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.pushNamed(context, '/weight_crud_screen');
+          deleteWeight();
         },
-        tooltip: 'Increment',
+        tooltip: 'Delete Wight',
         child: const Icon(Icons.delete),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      ),
     );
   }
 }
