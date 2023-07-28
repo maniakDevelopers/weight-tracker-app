@@ -1,6 +1,4 @@
-import 'dart:convert';
 import 'package:weight_tracker_app/common/packages.dart';
-import 'package:http/http.dart' as http;
 
 class SignupScreen extends StatefulWidget {
   SignupScreen({Key? key}) : super(key: key);
@@ -22,24 +20,11 @@ class _SignupScreenState extends State<SignupScreen> {
   void signup() async {
     if (_emailController.text.isNotEmpty &
         _passwordController.text.isNotEmpty) {
-      var requestBody = {
-        "email": _emailController.text,
-        "password": _passwordController.text
-      };
-      print(Config.registerEndpoint);
-      print(requestBody);
-      print("URI parse :  ${Uri.parse(Config.registerEndpoint)}");
-      var response = await http.post(Uri.parse(Config.registerEndpoint),
-          headers: {"Content-Type": "application/json"},
-          body: jsonEncode(requestBody));
+      var response = await UserService.signup(
+          _emailController.text, _passwordController.text);
 
-      var jsonResponse = jsonDecode(response.body);
-      print(jsonResponse["success"]);
-      if (jsonResponse["status"]) {
+      if (response.status) {
         Navigator.pushNamed(context, '/login_screen');
-        // setState(() {
-        //   isSigneUp = true;
-        // });
       } else {
         // TODO: Error handling
         print("Failed");
@@ -66,17 +51,13 @@ class _SignupScreenState extends State<SignupScreen> {
                   children: [
                     Lottie.asset(
                       'assets/lottiefiles/shiba-coffee-relax.json',
-                      height: MediaQuery.of(context).size.height * 0.20,
+                      height: MediaQuery.of(context).size.height * 0.15,
                       width: MediaQuery.of(context).size.width * 0.25,
                     ),
                     const Column(
                       children: [
                         Text(
-                          'Hello Again!',
-                          style: kSmallPrimarytTextStyle,
-                        ),
-                        Text(
-                          'Welcome back, we missed you!',
+                          'Welcome to the Weight tracker App',
                           style: kSmallPrimarytTextStyle,
                         ),
                       ],
@@ -107,19 +88,6 @@ class _SignupScreenState extends State<SignupScreen> {
                   obscureText: true,
                   decoration: kTextFieldDecoration.copyWith(
                       hintText: 'Enter Password', prefixIcon: Icon(Icons.lock)),
-                ),
-                const SizedBox(
-                  height: 5,
-                ),
-                Container(
-                  width: 250,
-                  child: GestureDetector(
-                      child: Text(
-                    'Forgot Password',
-                    textAlign: TextAlign.right,
-                    style: kSmallSignuptextStyle.copyWith(
-                        fontSize: 14, color: Colors.green),
-                  )),
                 ),
                 const SizedBox(
                   height: 45,

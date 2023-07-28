@@ -1,7 +1,4 @@
-import 'dart:convert';
-
 import 'package:weight_tracker_app/common/packages.dart';
-import 'package:http/http.dart' as http;
 
 // Save, Edit and Delete Weight
 
@@ -17,9 +14,7 @@ class WeightCrudScreen extends StatefulWidget {
 class _WeightCrudScreenState extends State<WeightCrudScreen> {
   final scaffoldKey = GlobalKey<ScaffoldState>();
   final formKey = GlobalKey<FormState>();
-  String? userid;
   String? weight;
-  String? weighed_on;
   String userId = "test";
   @override
   void initState() {
@@ -32,50 +27,16 @@ class _WeightCrudScreenState extends State<WeightCrudScreen> {
 
   final TextEditingController _weightController = TextEditingController();
   bool _validate = false;
-  void addWeight() async {
+  void saveWeight() async {
     if (_weightController.text.isNotEmpty) {
-      var requestBody = {
-        "userId": userId,
-        "weight": _weightController.text,
-        "weighed_on": DateTime.now().toString(),
-      };
+      var response = await WeightService.saveWeight(
+          userId, _weightController.text, DateTime.now().toString());
 
-      var response = await http.post(Uri.parse(Config.addWeightEndpoint),
-          headers: {"Content-Type": "application/json"},
-          body: jsonEncode(requestBody));
-
-      var jsonResponse = jsonDecode(response.body);
-
-      if (jsonResponse["status"]) {
-        print("Weight added");
-        Navigator.pushNamed(context, '/');
+      if (response.status) {
+        Navigator.pushNamed(context, '/home_screen');
       } else {
         // TODO: Error handling
         print("Weight Failed");
-      }
-    } else {
-      _validate = false;
-    }
-  }
-
-  void deleteWeight() async {
-    if (_weightController.text.isNotEmpty) {
-      var requestBody = {
-        "userId": userId,
-      };
-
-      var response = await http.post(Uri.parse(Config.addWeightEndpoint),
-          headers: {"Content-Type": "application/json"},
-          body: jsonEncode(requestBody));
-
-      var jsonResponse = jsonDecode(response.body);
-
-      if (jsonResponse["status"]) {
-        print("Weight Deleted");
-        Navigator.pushNamed(context, '/weight_crud_screen');
-      } else {
-        // TODO: Error handling
-        print("Weight Delete Failed");
       }
     } else {
       _validate = false;
@@ -101,13 +62,13 @@ class _WeightCrudScreenState extends State<WeightCrudScreen> {
         children: <Widget>[
           Center(
             child: Container(
-              height: MediaQuery.of(context).size.height * 0.60,
+              height: MediaQuery.of(context).size.height * 0.30,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Lottie.asset(
                     'assets/lottiefiles/shiba-coffee-relax.json',
-                    height: MediaQuery.of(context).size.height * 0.30,
+                    height: MediaQuery.of(context).size.height * 0.15,
                     width: MediaQuery.of(context).size.width * 0.45,
                   ),
                   TextFormField(
@@ -125,7 +86,7 @@ class _WeightCrudScreenState extends State<WeightCrudScreen> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      addWeight();
+                      saveWeight();
                     },
                     child: Material(
                       shape: RoundedRectangleBorder(
@@ -134,7 +95,7 @@ class _WeightCrudScreenState extends State<WeightCrudScreen> {
                       elevation: 10,
                       child: Container(
                         decoration: kLandingScreenButtonsboxDecoration,
-                        height: MediaQuery.of(context).size.height * 0.055,
+                        height: MediaQuery.of(context).size.height * 0.065,
                         width: MediaQuery.of(context).size.width * 0.40,
                         child: Center(
                           child: Text(
@@ -153,10 +114,8 @@ class _WeightCrudScreenState extends State<WeightCrudScreen> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          deleteWeight();
-        },
-        tooltip: 'Delete Wight',
+        onPressed: () {},
+        tooltip: 'Delete Weight',
         child: const Icon(Icons.delete),
       ),
     );

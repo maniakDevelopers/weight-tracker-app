@@ -1,7 +1,4 @@
-import 'dart:convert';
-
 import 'package:weight_tracker_app/common/packages.dart';
-import 'package:http/http.dart' as http;
 
 class LoginScreen extends StatefulWidget {
   LoginScreen({Key? key}) : super(key: key);
@@ -44,18 +41,13 @@ class _LoginScreenState extends State<LoginScreen> {
         "email": _emailController.text,
         "password": _passwordController.text
       };
-      print(Config.registerEndpoint);
-      print(requestBody);
-      var response = await http.post(Uri.parse(Config.loginEndpoint),
-          headers: {"Content-Type": "application/json"},
-          body: jsonEncode(requestBody));
 
-      var jsonResponse = jsonDecode(response.body);
-      print(jsonResponse["success"]);
-      if (jsonResponse["status"]) {
-        var myToken = jsonResponse["token"];
+      var response = await UserService.login(
+          _emailController.text, _passwordController.text);
+
+      if (response.status) {
+        var myToken = response.data.toString();
         prefs.setString("token", myToken);
-
         saveToken(myToken);
 
         context.read<TokenProvider>().getToken(myToken);
@@ -79,14 +71,13 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Column(
-              //mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Lottie.asset(
                       'assets/lottiefiles/shiba-coffee-relax.json',
-                      height: MediaQuery.of(context).size.height * 0.20,
+                      height: MediaQuery.of(context).size.height * 0.15,
                       width: MediaQuery.of(context).size.width * 0.25,
                     ),
                     const Column(
