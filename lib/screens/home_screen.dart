@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:weight_tracker_app/common/packages.dart';
+import 'package:http/http.dart' as http;
 
 // Weight History and Delete Weight
 
@@ -13,6 +16,9 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   String email = "test";
+  String userId = "test";
+
+  List<WeightModel> weights = [];
   @override
   void initState() {
     // TODO: implement initState
@@ -20,6 +26,33 @@ class _HomeScreenState extends State<HomeScreen> {
     Map<String, dynamic> jwtDecodedToken =
         JwtDecoder.decode(context.read<TokenProvider>().token!);
     email = jwtDecodedToken["email"];
+    userId = jwtDecodedToken["id"];
+    getWeightHistory();
+  }
+
+  void getWeightHistory() async {
+    var requestBody = {
+      "userId": userId,
+    };
+
+    var response = await http.post(Uri.parse(Config.weightHistoryEndpoint),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode(requestBody));
+
+    var jsonResponse = jsonDecode(response.body);
+
+    if (jsonResponse["status"]) {
+      setState(() {
+        weights = (jsonResponse["success"] as List)
+            .map((data) => WeightModel.fromJson(data))
+            .toList();
+      });
+
+      print("Got weight : ${weights.length}");
+    } else {
+      // TODO: Error handling
+      print("Weight Failed");
+    }
   }
 
   @override
@@ -72,7 +105,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: GridView.count(
                     crossAxisCount: 1,
                     childAspectRatio: 4,
-                    children: List.generate(4, (index) {
+                    children: List.generate(weights.length, (index) {
                       return GestureDetector(
                         onTap: () {},
                         child: Padding(
@@ -87,14 +120,16 @@ class _HomeScreenState extends State<HomeScreen> {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceEvenly,
                                 children: [
-                                  const Text('Weight Information',
+                                  Text('Weight : ${weights[index].weight}',
+                                      style: kSmallPrimarytTextStyle),
+                                  Text('Weight : ${weights[index].weighed_on}',
                                       style: kSmallPrimarytTextStyle),
                                   GestureDetector(
                                       onTap: () {
                                         Navigator.pushNamed(
                                             context, '/weight_crud_screen');
                                       },
-                                      child: Icon(Icons.delete_rounded))
+                                      child: const Icon(Icons.delete_rounded))
                                 ],
                               ),
                             ),
@@ -104,19 +139,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     }),
                   ),
                 ),
-                // Card(
-                //   shape: RoundedRectangleBorder(
-                //     borderRadius: BorderRadius.circular(5.0),
-                //   ),
-                //   child: const Row(
-                //     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                //     children: [
-                //       Text('Wheight Information',
-                //           style: kSmallPrimarytTextStyle),
-                //       Icon(Icons.delete_rounded)
-                //     ],
-                //   ),
-                // ),
               ],
             ),
           ),
@@ -126,9 +148,9 @@ class _HomeScreenState extends State<HomeScreen> {
         onPressed: () {
           Navigator.pushNamed(context, '/weight_crud_screen');
         },
-        tooltip: 'Increment',
+        tooltip: 'Add Weight',
         child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      ),
     );
   }
 }

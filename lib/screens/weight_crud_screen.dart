@@ -39,20 +39,40 @@ class _WeightCrudScreenState extends State<WeightCrudScreen> {
         "weight": _weightController.text,
         "weighed_on": DateTime.now().toString(),
       };
-      print(Config.registerEndpoint);
-      print(requestBody);
+
       var response = await http.post(Uri.parse(Config.addWeightEndpoint),
           headers: {"Content-Type": "application/json"},
           body: jsonEncode(requestBody));
 
       var jsonResponse = jsonDecode(response.body);
-      print(jsonResponse["success"]);
+
       if (jsonResponse["status"]) {
         print("Weight added");
         Navigator.pushNamed(context, '/');
-        // setState(() {
-        //   isSigneUp = true;
-        // });
+      } else {
+        // TODO: Error handling
+        print("Weight Failed");
+      }
+    } else {
+      _validate = false;
+    }
+  }
+
+  void deleteWeight() async {
+    if (_weightController.text.isNotEmpty) {
+      var requestBody = {
+        "userId": userId,
+      };
+
+      var response = await http.post(Uri.parse(Config.addWeightEndpoint),
+          headers: {"Content-Type": "application/json"},
+          body: jsonEncode(requestBody));
+
+      var jsonResponse = jsonDecode(response.body);
+
+      if (jsonResponse["status"]) {
+        print("Weight Deleted");
+        Navigator.pushNamed(context, '/');
       } else {
         // TODO: Error handling
         print("Weight Failed");

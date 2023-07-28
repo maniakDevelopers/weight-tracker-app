@@ -1,6 +1,8 @@
 class Config {
-  static const String apiURL = "https://2d9b-102-32-69-84.ngrok-free.app/";
-  static const String registerEndpoint = apiURL + "register";
+  static const String apiURL = "http://10.0.2.2:3000/";
+  static const String registerEndpoint = apiURL + "sign_up";
   static const String loginEndpoint = apiURL + "login";
-  static const String addWeightEndpoint = apiURL + "addWeight";
+  static const String addWeightEndpoint = apiURL + "save_weight";
+  static const String weightHistoryEndpoint = apiURL + "get_weight_history";
+  static const String deleteEndpoint = apiURL + "delete_weight";
 }

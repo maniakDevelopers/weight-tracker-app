@@ -28,6 +28,7 @@ class _SignupScreenState extends State<SignupScreen> {
       };
       print(Config.registerEndpoint);
       print(requestBody);
+      print("URI parse :  ${Uri.parse(Config.registerEndpoint)}");
       var response = await http.post(Uri.parse(Config.registerEndpoint),
           headers: {"Content-Type": "application/json"},
           body: jsonEncode(requestBody));

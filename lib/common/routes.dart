@@ -1,5 +1,6 @@
 import 'package:weight_tracker_app/common/packages.dart';
 
+// TODO: Use the correct appRoutes
 var appRoutes = {
   '/': (context) => SignupScreen(),
   '/home_screen': (context) => HomeScreen(
