@@ -15,6 +15,52 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _validate = false;
+
+  late SharedPreferences prefs;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    initSharedPref();
+  }
+
+  void initSharedPref() async {
+    prefs = await SharedPreferences.getInstance();
+  }
+
+  Future<void> saveToken(String token) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('token', token);
+  }
+
+  void login() async {
+    if (_emailController.text.isNotEmpty &
+        _passwordController.text.isNotEmpty) {
+      var requestBody = {
+        "email": _emailController.text,
+        "password": _passwordController.text
+      };
+
+      var response = await UserService.login(
+          _emailController.text, _passwordController.text);
+
+      if (response.status) {
+        var myToken = response.data.toString();
+        prefs.setString("token", myToken);
+        saveToken(myToken);
+
+        context.read<TokenProvider>().getToken(myToken);
+        Navigator.pushNamed(context, '/home_screen');
+      } else {
+        // TODO: Error handling
+        print("Failed");
+      }
+    } else {
+      _validate = false;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,14 +71,13 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Column(
-              //mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Lottie.asset(
                       'assets/lottiefiles/shiba-coffee-relax.json',
-                      height: MediaQuery.of(context).size.height * 0.20,
+                      height: MediaQuery.of(context).size.height * 0.15,
                       width: MediaQuery.of(context).size.width * 0.25,
                     ),
                     const Column(
@@ -92,8 +137,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 GestureDetector(
                   onTap: () {
-                    // AuthService().emailLogin(email!, password!);
-                    Navigator.pushNamed(context, '/');
+                    login();
                   },
                   child: Material(
                     shape: RoundedRectangleBorder(

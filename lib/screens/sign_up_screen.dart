@@ -15,6 +15,25 @@ class _SignupScreenState extends State<SignupScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _validate = false;
+  bool isSigneUp = false;
+
+  void signup() async {
+    if (_emailController.text.isNotEmpty &
+        _passwordController.text.isNotEmpty) {
+      var response = await UserService.signup(
+          _emailController.text, _passwordController.text);
+
+      if (response.status) {
+        Navigator.pushNamed(context, '/login_screen');
+      } else {
+        // TODO: Error handling
+        print("Failed");
+      }
+    } else {
+      _validate = false;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -32,17 +51,13 @@ class _SignupScreenState extends State<SignupScreen> {
                   children: [
                     Lottie.asset(
                       'assets/lottiefiles/shiba-coffee-relax.json',
-                      height: MediaQuery.of(context).size.height * 0.20,
+                      height: MediaQuery.of(context).size.height * 0.15,
                       width: MediaQuery.of(context).size.width * 0.25,
                     ),
                     const Column(
                       children: [
                         Text(
-                          'Hello Again!',
-                          style: kSmallPrimarytTextStyle,
-                        ),
-                        Text(
-                          'Welcome back, we missed you!',
+                          'Welcome to the Weight tracker App',
                           style: kSmallPrimarytTextStyle,
                         ),
                       ],
@@ -75,25 +90,16 @@ class _SignupScreenState extends State<SignupScreen> {
                       hintText: 'Enter Password', prefixIcon: Icon(Icons.lock)),
                 ),
                 const SizedBox(
-                  height: 5,
-                ),
-                Container(
-                  width: 250,
-                  child: GestureDetector(
-                      child: Text(
-                    'Forgot Password',
-                    textAlign: TextAlign.right,
-                    style: kSmallSignuptextStyle.copyWith(
-                        fontSize: 14, color: Colors.green),
-                  )),
-                ),
-                const SizedBox(
                   height: 45,
                 ),
                 GestureDetector(
                   onTap: () {
-                    // AuthService().emailLogin(email!, password!);
-                    Navigator.pushNamed(context, '/');
+                    signup();
+                    // if (isSigneUp) {
+                    //   Navigator.pushNamed(context, '/login_screen');
+                    // } else {
+                    //   print("Failed to sign up");
+                    // }
                   },
                   child: Material(
                     shape: RoundedRectangleBorder(

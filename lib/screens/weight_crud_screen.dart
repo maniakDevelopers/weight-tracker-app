@@ -12,24 +12,39 @@ class WeightCrudScreen extends StatefulWidget {
 }
 
 class _WeightCrudScreenState extends State<WeightCrudScreen> {
-  int _counter = 0;
+  final scaffoldKey = GlobalKey<ScaffoldState>();
+  final formKey = GlobalKey<FormState>();
+  String? weight;
+  String userId = "test";
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    Map<String, dynamic> jwtDecodedToken =
+        JwtDecoder.decode(context.read<TokenProvider>().token!);
+    userId = jwtDecodedToken["id"];
+  }
 
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
+  final TextEditingController _weightController = TextEditingController();
+  bool _validate = false;
+  void saveWeight() async {
+    if (_weightController.text.isNotEmpty) {
+      var response = await WeightService.saveWeight(
+          userId, _weightController.text, DateTime.now().toString());
+
+      if (response.status) {
+        Navigator.pushNamed(context, '/home_screen');
+      } else {
+        // TODO: Error handling
+        print("Weight Failed");
+      }
+    } else {
+      _validate = false;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    String? weight;
-    final TextEditingController _weightController = TextEditingController();
-    // than having to individually change instances of widgets.
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
@@ -47,13 +62,13 @@ class _WeightCrudScreenState extends State<WeightCrudScreen> {
         children: <Widget>[
           Center(
             child: Container(
-              height: MediaQuery.of(context).size.height * 0.60,
+              height: MediaQuery.of(context).size.height * 0.30,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Lottie.asset(
                     'assets/lottiefiles/shiba-coffee-relax.json',
-                    height: MediaQuery.of(context).size.height * 0.30,
+                    height: MediaQuery.of(context).size.height * 0.15,
                     width: MediaQuery.of(context).size.width * 0.45,
                   ),
                   TextFormField(
@@ -61,7 +76,7 @@ class _WeightCrudScreenState extends State<WeightCrudScreen> {
                       weight = value;
                     },
                     controller: _weightController,
-                    keyboardType: TextInputType.number,
+                    // keyboardType: TextInputType.number,
                     decoration: kTextFieldDecoration.copyWith(
                         hintText: 'Enter your Weight',
                         prefixIcon: Icon(Icons.scale_rounded)),
@@ -71,8 +86,7 @@ class _WeightCrudScreenState extends State<WeightCrudScreen> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      // AuthService().emailLogin(email!, password!);
-                      Navigator.pushNamed(context, '/');
+                      saveWeight();
                     },
                     child: Material(
                       shape: RoundedRectangleBorder(
@@ -81,7 +95,7 @@ class _WeightCrudScreenState extends State<WeightCrudScreen> {
                       elevation: 10,
                       child: Container(
                         decoration: kLandingScreenButtonsboxDecoration,
-                        height: MediaQuery.of(context).size.height * 0.055,
+                        height: MediaQuery.of(context).size.height * 0.065,
                         width: MediaQuery.of(context).size.width * 0.40,
                         child: Center(
                           child: Text(
@@ -100,12 +114,10 @@ class _WeightCrudScreenState extends State<WeightCrudScreen> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.pushNamed(context, '/weight_crud_screen');
-        },
-        tooltip: 'Increment',
+        onPressed: () {},
+        tooltip: 'Delete Weight',
         child: const Icon(Icons.delete),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      ),
     );
   }
 }
