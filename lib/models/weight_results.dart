@@ -28,11 +28,11 @@ class WeightResult {
 
   WeightResult.fromJson(Map<String, dynamic> json)
       : status = json['status'],
-        success = json['success'];
+        success = json['data'];
 
   Map<String, dynamic> toJson() => {
         'status': status,
-        'success': success,
+        'data': success,
       };
 }
 

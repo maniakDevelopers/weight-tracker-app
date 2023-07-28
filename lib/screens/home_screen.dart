@@ -1,7 +1,5 @@
-import 'dart:convert';
-
+import 'package:intl/intl.dart';
 import 'package:weight_tracker_app/common/packages.dart';
-import 'package:http/http.dart' as http;
 
 // Weight History and Delete Weight
 
@@ -9,14 +7,13 @@ class HomeScreen extends StatefulWidget {
   HomeScreen({super.key, required this.title});
 // TODO: Change this to using provider
   final String title;
-  // final String token;
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  String email = "test";
-  String userId = "test";
+  String email = "";
+  String userId = "";
 
   List<WeightModel> weights = [];
   @override
@@ -31,24 +28,14 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void getWeightHistory() async {
-    var requestBody = {
-      "userId": userId,
-    };
+    var response = await WeightService.getWeightHistory(userId);
 
-    var response = await http.post(Uri.parse(Config.weightHistoryEndpoint),
-        headers: {"Content-Type": "application/json"},
-        body: jsonEncode(requestBody));
-
-    var jsonResponse = jsonDecode(response.body);
-
-    if (jsonResponse["status"]) {
+    if (response.status) {
       setState(() {
-        weights = (jsonResponse["success"] as List)
+        weights = (response.data as List)
             .map((data) => WeightModel.fromJson(data))
             .toList();
       });
-
-      print("Got weight : ${weights.length}");
     } else {
       // TODO: Error handling
       print("Weight Failed");
@@ -56,19 +43,10 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void deleteWeight(String weightId) async {
-    var requestBody = {
-      "id": weightId,
-    };
+    var response = await WeightService.deleteWeight(weightId);
 
-    var response = await http.post(Uri.parse(Config.deleteEndpoint),
-        headers: {"Content-Type": "application/json"},
-        body: jsonEncode(requestBody));
-
-    var jsonResponse = jsonDecode(response.body);
-
-    if (jsonResponse["status"]) {
-      print("Weight Deleted");
-      Navigator.pushNamed(context, '/');
+    if (response.status) {
+      Navigator.pushNamed(context, '/home_screen');
     } else {
       // TODO: Error handling
       print("Weight Delete Failed");
@@ -93,13 +71,13 @@ class _HomeScreenState extends State<HomeScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           Container(
-            height: MediaQuery.of(context).size.height * 0.40,
+            height: MediaQuery.of(context).size.height * 0.35,
             width: MediaQuery.of(context).size.width * 0.90,
             child: Column(
               children: [
                 Lottie.asset(
                   'assets/lottiefiles/shiba-coffee-relax.json',
-                  height: MediaQuery.of(context).size.height * 0.30,
+                  height: MediaQuery.of(context).size.height * 0.25,
                   width: MediaQuery.of(context).size.width * 0.45,
                 ),
                 Text(
@@ -112,9 +90,16 @@ class _HomeScreenState extends State<HomeScreen> {
           SingleChildScrollView(
             child: Column(
               children: [
-                Text(
-                  'Weight History',
-                  style: kSmallPrimarytTextStyle.copyWith(fontSize: 20),
+                Container(
+                  child: weights.isEmpty
+                      ? Text(
+                          'Click the button to add your weight',
+                          style: kSmallPrimarytTextStyle.copyWith(fontSize: 20),
+                        )
+                      : Text(
+                          'Weight History',
+                          style: kSmallPrimarytTextStyle.copyWith(fontSize: 20),
+                        ),
                 ),
                 Container(
                   height: MediaQuery.of(context).size.height * 0.45,
@@ -141,17 +126,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                       Text('Weight : ${weights[index].weight}',
                                           style: kSmallPrimarytTextStyle),
                                       Text(
-                                          'Date : ${weights[index].weighed_on}',
-                                          style: kSmallPrimarytTextStyle),
-                                      Text('Date : ${weights[index].id}',
+                                          'Date : ${DateFormat.yMMMEd().add_jm().format(DateTime.parse(weights[index].weighed_on))}',
                                           style: kSmallPrimarytTextStyle),
                                     ],
                                   ),
                                   GestureDetector(
                                       onTap: () {
                                         deleteWeight(weights[index].id);
-                                        // Navigator.pushNamed(
-                                        //     context, '/weight_crud_screen');
                                       },
                                       child: const Icon(Icons.delete_rounded))
                                 ],
