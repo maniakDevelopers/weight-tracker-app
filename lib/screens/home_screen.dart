@@ -55,6 +55,26 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  void deleteWeight(String weightId) async {
+    var requestBody = {
+      "id": weightId,
+    };
+
+    var response = await http.post(Uri.parse(Config.deleteEndpoint),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode(requestBody));
+
+    var jsonResponse = jsonDecode(response.body);
+
+    if (jsonResponse["status"]) {
+      print("Weight Deleted");
+      Navigator.pushNamed(context, '/');
+    } else {
+      // TODO: Error handling
+      print("Weight Delete Failed");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -82,10 +102,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   height: MediaQuery.of(context).size.height * 0.30,
                   width: MediaQuery.of(context).size.width * 0.45,
                 ),
-                // Text(
-                //   'Name :${context.watch<TokenProvider>().token}',
-                //   style: kSmallPrimarytTextStyle,
-                // ),
                 Text(
                   'Name :$email',
                   style: kSmallPrimarytTextStyle,
@@ -120,14 +136,22 @@ class _HomeScreenState extends State<HomeScreen> {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceEvenly,
                                 children: [
-                                  Text('Weight : ${weights[index].weight}',
-                                      style: kSmallPrimarytTextStyle),
-                                  Text('Weight : ${weights[index].weighed_on}',
-                                      style: kSmallPrimarytTextStyle),
+                                  Column(
+                                    children: [
+                                      Text('Weight : ${weights[index].weight}',
+                                          style: kSmallPrimarytTextStyle),
+                                      Text(
+                                          'Date : ${weights[index].weighed_on}',
+                                          style: kSmallPrimarytTextStyle),
+                                      Text('Date : ${weights[index].id}',
+                                          style: kSmallPrimarytTextStyle),
+                                    ],
+                                  ),
                                   GestureDetector(
                                       onTap: () {
-                                        Navigator.pushNamed(
-                                            context, '/weight_crud_screen');
+                                        deleteWeight(weights[index].id);
+                                        // Navigator.pushNamed(
+                                        //     context, '/weight_crud_screen');
                                       },
                                       child: const Icon(Icons.delete_rounded))
                                 ],

@@ -72,10 +72,10 @@ class _WeightCrudScreenState extends State<WeightCrudScreen> {
 
       if (jsonResponse["status"]) {
         print("Weight Deleted");
-        Navigator.pushNamed(context, '/');
+        Navigator.pushNamed(context, '/weight_crud_screen');
       } else {
         // TODO: Error handling
-        print("Weight Failed");
+        print("Weight Delete Failed");
       }
     } else {
       _validate = false;
@@ -84,9 +84,6 @@ class _WeightCrudScreenState extends State<WeightCrudScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // String? weight;
-    // final TextEditingController _weightController = TextEditingController();
-    // than having to individually change instances of widgets.
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
@@ -128,8 +125,6 @@ class _WeightCrudScreenState extends State<WeightCrudScreen> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      // AuthService().emailLogin(email!, password!);
-                      //Navigator.pushNamed(context, '/');
                       addWeight();
                     },
                     child: Material(
@@ -159,11 +154,11 @@ class _WeightCrudScreenState extends State<WeightCrudScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.pushNamed(context, '/weight_crud_screen');
+          deleteWeight();
         },
-        tooltip: 'Increment',
+        tooltip: 'Delete Wight',
         child: const Icon(Icons.delete),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      ),
     );
   }
 }
